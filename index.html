@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Busca de CNPJ</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .container {
+      margin-top: 50px;
+    }
+    .result-text {
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="text-center">Busca de CNPJ</h1>
+    <div class="input-group mb-3">
+      <input type="text" id="cnpjInput" class="form-control" placeholder="Digite o CNPJ">
+      <button class="btn btn-primary" onclick="buscarCNPJ()">Buscar</button>
+    </div>
+    <div id="resultado" class="result-text"></div>
+  </div>
+
+  <script>
+    function buscarCNPJ() {
+      const cnpjInput = document.getElementById('cnpjInput').value.replace(/[^\d]/g, '');
+      const cnpjLength = cnpjInput.length;
+
+      if (cnpjLength !== 14) {
+        document.getElementById('resultado').innerHTML = 'CNPJ inválido';
+        return;
+      }
+
+      fetch(`https://api-publica.speedio.com.br/buscarcnpj?cnpj=${cnpjInput}`)
+        .then(response => response.json())
+        .then(data => {
+          const formattedData = formatarDados(data);
+          document.getElementById('resultado').innerHTML = formattedData;
+        })
+        .catch(error => {
+          document.getElementById('resultado').innerHTML = 'Erro ao buscar CNPJ';
+          console.error('Erro ao buscar CNPJ:', error);
+        });
+    }
+
+    function formatarDados(data) {
+      let formattedString = '';
+      for (const key in data) {
+        formattedString += `${key.toUpperCase()} : ${data[key]}\n`;
+      }
+      return formattedString;
+    }
+  </script>
+</body>
+</html>
